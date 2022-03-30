@@ -18,9 +18,9 @@ def action(data):
     # data = {"case": <str>}
     case = data["case"].lower()
     
-    dict_with_numpy_nan = {"a":1, "b":2.3, "c":-numpy.pi, "d":numpy.nan}
-    dict_with_numpy_inf = {"a":1, "b":2.3, "c":-numpy.pi, "d":numpy.inf, "e": -numpy.inf}
-    dict_with_numpy_nan_and_inf = {"a":1, "b":2.3, "c":-numpy.pi, "d":numpy.inf, "e":numpy.nan}
+    dict_with_numpy_nan = {"a":1.3, "b":None, "c":-numpy.pi, "d":numpy.nan}
+    dict_with_numpy_inf = {"a":1.3, "b":None, "c":-numpy.e , "d":numpy.inf, "e": -numpy.inf}
+    dict_with_numpy_nan_and_inf = {"a":1.3, "b":None, "c":-numpy.pi, "d":numpy.inf, "e":numpy.nan}
 
     if case=="numpy_nan":
         output = dict_with_numpy_nan
@@ -39,7 +39,7 @@ def action(data):
 
 
 def fix_numpy_nans_and_infs_in_dict(values:dict) -> dict:
-    """A function to change all numpy.nan values in a flat dictionary to python Nones.
+    """A function to change all numpy.nan and numpy.inf values in a flat dictionary to python Nones.
 
     Args:
         values (dict): Input dict to fix.
@@ -49,12 +49,16 @@ def fix_numpy_nans_and_infs_in_dict(values:dict) -> dict:
     """
 
     for key, val in values.items():
-        # Check for numpy.nan and numpy.inf;
+        # If value is numeric (not None), check for numpy.nan and numpy.inf
         # If True, change to None, else keep unchanged
-        values[key] = val if not numpy.isnan(val) else None
-
-        if numpy.isinf(val):
-            logger.warning("Infinity encountered on column %s! Setting value to None.", key)
-            values[key]=None
+        if val is not None:
+            if numpy.isnan(val):
+                values[key] = None
+            elif numpy.isinf(val):
+                logger.warning(
+                    "Infinity encountered on column %s! Setting value to None.",
+                    key
+                )
+                values[key] = None
 
     return values
