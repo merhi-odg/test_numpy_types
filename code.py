@@ -30,9 +30,9 @@ def action(data):
         output = dict_with_numpy_nan_and_inf
     elif case=="nan_to_none":
         output = fix_numpy_nans_and_infs_in_dict(dict_with_numpy_nan)
-    elif case=="inf_to_none":
+    elif case=="inf_to_inf":
         output = fix_numpy_nans_and_infs_in_dict(dict_with_numpy_inf)
-    elif case=="nan_and_inf_to_none":
+    elif case=="nan_and_inf_to_none_and_inf":
         output = fix_numpy_nans_and_infs_in_dict(dict_with_numpy_nan_and_inf)
         
     return output 
@@ -55,10 +55,6 @@ def fix_numpy_nans_and_infs_in_dict(values:dict) -> dict:
             if numpy.isnan(val):
                 values[key] = None
             elif numpy.isinf(val):
-                logger.warning(
-                    "Infinity encountered on column %s! Setting value to None.",
-                    key
-                )
-                values[key] = None
+                values[key] = float(val)
 
     return values
